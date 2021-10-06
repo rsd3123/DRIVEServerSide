@@ -36,50 +36,55 @@ const io = new Server(app);
 io.on('connection', (socket) => {
   var anotherSocketId = '';
   console.log('In socket: ',socket.id);
+  
   /*
   console.log("connected sockets-----:");
-  listSocketsProperty('id');
+  listSocketsProperty('data.name');
   console.log("------------------");
   */
+ //console.log(socket.data.name);
 
   //When message is recieved by socket
   socket.on('message', (message) => {
-    data = JSON.parse(message);
-    switch (data.type) {
+    data2 = JSON.parse(message);
+    switch (data2.type) {
       case 'login':
         //Automatically join empty room based off of socket.id
         console.log('Login');
         console.log("Logging in ID: ", socket.id);
-        socket.data.name = data.name;
-        console.log(socket.data.name);
+        socket.name = data2.name;
+        console.log("Socket name: ", socket.name);
+        console.log("New Socket ID: ", socket.id);
         break;
       //when somebody wants to call us
       case 'offer':
-        console.log("Socket sending offer: ", socket.id);
+        console.log("Socket sending offer: ", socket.id, socket.name);
         //Sends nameid of person offer is for, the offer, and type = offer
-        anotherSocketId = getSocketsProperty('name',data.name);
-        //socket.to(anotherSocketId).emit('offer', message);
-        console.log("Sending offer to: ", socket.id);
-        console.log("Offer message sending: ", message);
-        io.to(socket.id).emit('message', message);
+        //Get the socket that has the name property of data2.name, send offer to that socket id
+        anotherSocketId = getSocketsProperty('name',data2.name);
+        data2.name = socket.name;
+        message = JSON.stringify(data2);
+        console.log("Offer message: ", message)
+        console.log("Sending offer to: ", anotherSocketId);
+        io.to(anotherSocketId).emit('message', message);
         anotherSocketId = '';
         console.log('Offer');
         break;
       case 'answer':
         //If answer = yes, join room of caller. If answer = no, dont join room, stay in current room.
-        anotherSocketId = getSocketsProperty('name',data.name);
-        console.log('anotherSocketID from Answer: ', anotherSocketId);
-        //message = JSON.stringify(data)
-        socket.to(anotherSocketId).emit('message', message);
+        console.log("Socket sending answer: ", socket.id, socket.name);
+        anotherSocketId = getSocketsProperty('name',data2.name);
+        console.log('Sending answer too: ', anotherSocketId);
+        io.to(anotherSocketId).emit('message', message);
         anotherSocketId = '';
         console.log('Answer');
         break;
       //when a remote peer sends an ice candidate to us
       case 'candidate':
-        anotherSocketId = getSocketsProperty('name',data.name);
+        anotherSocketId = getSocketsProperty('name',data2.name);
         console.log('anotherSocketID from Candiate: ', anotherSocketId);
         //message = JSON.stringify(data)
-        socket.to(anotherSocketId).emit("message", message);
+        io.to(anotherSocketId).emit("message", message);
         anotherSocketId = '';
         console.log('Candidate');
         break;
@@ -104,6 +109,7 @@ io.on('connection', (socket) => {
     let sck = io.sockets.sockets
     const mapIter = sck.entries()
     while(1){
+      console.log("Map: ", mapIter);
       let en = mapIter.next().value?.[0]
       if(en) console.log( sck.get(en)[myProperty] )
       else break
