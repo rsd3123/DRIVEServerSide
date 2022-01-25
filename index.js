@@ -33,14 +33,17 @@ io.on('connection', (socket) => {
       case 'offer':
         console.log("Socket sending offer: ", socket.id, socket.name);
         //Sends nameid of person offer is for, the offer, and type = offer
-        //Get the socket that has the name property of data2.name, send offer to that socket id
+        //Find the socket with the target name given in the message data. Then, update data name to current socket, send to target client.
         anotherSocketId = getSocketsProperty('name',data2.name);
         data2.name = socket.name;
+
         message = JSON.stringify(data2);
         console.log("Offer message: ", message)
         console.log("Sending offer to: ", anotherSocketId);
+
         io.to(anotherSocketId).emit('message', message);
         anotherSocketId = '';
+
         console.log('Offer');
         break;
 
@@ -64,11 +67,14 @@ io.on('connection', (socket) => {
         console.log('Candidate');
         break;
 
+        //When a call is ended. Is not meant for socket disconnection, just call disconnection. Telling client to leave call.
       case 'leave':
-        //socket.to(anotherSocketId).emit("leave", socket.id, message);
-        //Disconnect socket from current room
+        //Get the target device to send the leave message to.
+        //No need to change taret socket name, as the leave only goes one way. Just send back same message.
+        anotherSocketId = getSocketsProperty('name',data2.name);
+        io.to(anotherSocketId).emit(message);
+        
         console.log('Leave');
-        socket.disconnect();
         break;
 
       default:
