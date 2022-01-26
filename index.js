@@ -1,79 +1,103 @@
+/**********
+ *  DRIVE Server Code
+ *  Authors: Rudy DeSanti, Kyle Witham, Roderick Ramirez
+ *  Purpose of this server is to transfer data between clients needed to establish video connections.
+ *  Last Updated:
+ */
+
+//Get packages, create server
 const static = require('node-static');
 const http = require('http');
 const file = new(static.Server)();
 const { Server } = require("socket.io");
+const io = new Server(app);
 
+//Create server app, listening on port 3000
 const app = http.createServer(function (req, res) {
   file.serve(req, res);
 }).listen(3000, ()=>{
   console.log('Listening on 3000');
 });
 
-const io = new Server(app);
-
+//On connection to server
 io.on('connection', (socket) => {
+
   var anotherSocketId = '';
   console.log('In socket: ',socket.id);
 
-  //When message is recieved by socket
+  //When a JSON message is recieved by socket, parse it to find which type of message it is.
   socket.on('message', (message) => {
-    data2 = JSON.parse(message);
 
-    switch (data2.type) {
+    data = JSON.parse(message);
+
+    //Different case for each type of message: Login, Offer, Answer, Candidate, Leave
+    switch (data.type) {
+      //When a user is loging into their account, set their socket's name attribute equal to their UserID. 
+      //The name attribute is used for finding the websockets of other clients.
       case 'login':
-        //Automatically join empty room based off of socket.id
+        //Automatically join empty room based off of socket.id.
         console.log('Login');
         console.log("Logging in ID: ", socket.id);
-        socket.name = data2.name;
+        socket.name = data.name;
         console.log("Socket name: ", socket.name);
         console.log("New Socket ID: ", socket.id);
         break;
 
-      //when somebody wants to call us
+      //When an offer is sent for establishing a video connection by a user.
+      //Send data from original client to the requested client.
       case 'offer':
-        console.log("Socket sending offer: ", socket.id, socket.name);
-        //Sends nameid of person offer is for, the offer, and type = offer
-        //Find the socket with the target name given in the message data. Then, update data name to current socket, send to target client.
-        anotherSocketId = getSocketsProperty('name',data2.name);
-        data2.name = socket.name;
 
-        message = JSON.stringify(data2);
+        console.log("Socket sending offer: ", socket.id, socket.name);
+
+        //Find the socket with the target name given in the message data. Then, update data name to current socket, send to target client.
+        anotherSocketId = getSocketsProperty('name',data.name);
+        data.name = socket.name;
+
+        //Stringify new data as JSON, send it to requested client.
+        message = JSON.stringify(data);
         console.log("Offer message: ", message)
         console.log("Sending offer to: ", anotherSocketId);
-
         io.to(anotherSocketId).emit('message', message);
         anotherSocketId = '';
 
         console.log('Offer');
         break;
 
+      //Send the data of the answer to an offer to the client who sent the offer.
       case 'answer':
-        //If answer = yes, join room of caller. If answer = no, dont join room, stay in current room.
+
+        //Print to server console for debugging purposes.
         console.log("Socket sending answer: ", socket.id, socket.name);
-        anotherSocketId = getSocketsProperty('name',data2.name);
+        anotherSocketId = getSocketsProperty('name',data.name);
         console.log('Sending answer too: ', anotherSocketId);
+
+        //Get socket to send to, send answer to that socket.
         io.to(anotherSocketId).emit('message', message);
         anotherSocketId = '';
         console.log('Answer');
         break;
 
-      //when a remote peer sends an ice candidate to us
+      //When two clients have sent an offer, and the offer was answered yes, send candidate date to the client who gave the answer.
+      //The candidate data establishes which ICE server to use to establish a video connection.
       case 'candidate':
-        anotherSocketId = getSocketsProperty('name',data2.name);
+
+        //Print to server console for debugging purposes.
+        anotherSocketId = getSocketsProperty('name',data.name);
         console.log('anotherSocketID from Candiate: ', anotherSocketId);
-        //message = JSON.stringify(data)
+        
+        //Send message to other client.
         io.to(anotherSocketId).emit("message", message);
         anotherSocketId = '';
         console.log('Candidate');
         break;
 
-        //When a call is ended. Is not meant for socket disconnection, just call disconnection. Telling client to leave call.
+      //When a call is ended. Is not meant for socket disconnection, just call disconnection. Telling a client to leave a video call.
       case 'leave':
+
         //Get the target device to send the leave message to.
         //No need to change taret socket name, as the leave only goes one way. Just send back same message.
-        anotherSocketId = getSocketsProperty('name',data2.name);
+        anotherSocketId = getSocketsProperty('name',data.name);
         io.to(anotherSocketId).emit(message);
-        
         console.log('Leave');
         break;
 
@@ -101,7 +125,7 @@ io.on('connection', (socket) => {
   }
   */
 
-  //Return socket id based off of a property
+  //Return socket id based off of a property. Used to fins socket ID based off of name attribute.
   function getSocketsProperty(property, target){
     let sck = io.sockets.sockets
     const mapIter = sck.entries()
