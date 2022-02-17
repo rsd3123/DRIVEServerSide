@@ -2,7 +2,8 @@
  *  DRIVE Server Code
  *  Authors: Rudy DeSanti, Kyle Witham, Roderick Ramirez
  *  Purpose of this server is to transfer data between clients needed to establish video connections.
- *  Last Updated:
+ *  Last Updated: January 25, 2022
+ *  Type "node index.js" in terminal to start server on port 3000.
  */
 
 //Get packages, create server
@@ -10,7 +11,7 @@ const static = require('node-static');
 const http = require('http');
 const file = new(static.Server)();
 const { Server } = require("socket.io");
-const io = new Server(app);
+
 
 //Create server app, listening on port 3000
 const app = http.createServer(function (req, res) {
@@ -19,6 +20,7 @@ const app = http.createServer(function (req, res) {
   console.log('Listening on 3000');
 });
 
+const io = new Server(app);
 //On connection to server
 io.on('connection', (socket) => {
 
@@ -99,6 +101,12 @@ io.on('connection', (socket) => {
         anotherSocketId = getSocketsProperty('name',data.name);
         io.to(anotherSocketId).emit(message);
         console.log('Leave');
+        break;
+      
+      case "lookUp":
+        anotherSocketId = getSocketsProperty('name',data.name);
+        io.to(anotherSocketId).emit(message);
+        console.log("Print up")
         break;
 
       default:
