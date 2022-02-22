@@ -36,6 +36,7 @@ io.on('connection', (socket) => {
     switch (data.type) {
       //When a user is loging into their account, set their socket's name attribute equal to their UserID. 
       //The name attribute is used for finding the websockets of other clients.
+
       case 'login':
         //Automatically join empty room based off of socket.id.
         console.log('Login');
@@ -48,7 +49,6 @@ io.on('connection', (socket) => {
       //When an offer is sent for establishing a video connection by a user.
       //Send data from original client to the requested client.
       case 'offer':
-
         console.log("Socket sending offer: ", socket.id, socket.name);
 
         //Find the socket with the target name given in the message data. Then, update data name to current socket, send to target client.
@@ -95,18 +95,21 @@ io.on('connection', (socket) => {
 
       //When a call is ended. Is not meant for socket disconnection, just call disconnection. Telling a client to leave a video call.
       case 'leave':
-
         //Get the target device to send the leave message to.
         //No need to change taret socket name, as the leave only goes one way. Just send back same message.
         anotherSocketId = getSocketsProperty('name',data.name);
-        io.to(anotherSocketId).emit(message);
+        io.to(anotherSocketId).emit("message", message);
+        anotherSocketId = '';
         console.log('Leave');
         break;
       
-      case "lookUp":
+      //Viewer sends commands to broadcaster cases
+      case 'lookUp' || 'lookDown' || 'lookRight' || 'lookLeft' || 'zoomIn' || 'zoomOut':
         anotherSocketId = getSocketsProperty('name',data.name);
-        io.to(anotherSocketId).emit(message);
-        console.log("Print up")
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
         break;
 
       default:
