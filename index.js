@@ -104,7 +104,7 @@ io.on('connection', (socket) => {
         break;
       
       //Viewer sends commands to broadcaster cases
-      case 'lookUp' || 'lookDown' || 'lookRight' || 'lookLeft' || 'zoomIn' || 'zoomOut':
+      case 'lookUp' || 'lookDown' || 'lookRight' || 'lookLeft' || 'zoomIn' || 'zoomOut' || 'lookUpLeftCorner' || 'lookUpRightCorner'||'lookDownLeftCorner'||'lookDownRightCorner':
         anotherSocketId = getSocketsProperty('name',data.name);
         console.log("Socket: " + anotherSocketId);
         io.to(anotherSocketId).emit("message", message);
