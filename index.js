@@ -136,6 +136,54 @@ io.on('connection', (socket) => {
         console.log(data.type)
         anotherSocketId = '';
         break;
+
+      case 'lookTopRight':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
+
+      case 'lookDownRight':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
+
+      case 'lookTopLeft':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
+
+      case 'lookDownLeft':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
+
+      case 'zoomIn':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
+
+      case 'zoomOut':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
   
       default:
         break;
