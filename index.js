@@ -104,7 +104,8 @@ io.on('connection', (socket) => {
         break;
       
       //Viewer sends commands to broadcaster cases
-      case 'lookUp' || 'lookDown' || 'lookRight' || 'lookLeft' || 'zoomIn' || 'zoomOut' || 'lookUpLeftCorner' || 'lookUpRightCorner'||'lookDownLeftCorner'||'lookDownRightCorner':
+      //|| 'lookDown' || 'lookRight' || 'lookLeft' || 'zoomIn' || 'zoomOut' || 'lookUpLeftCorner' || 'lookUpRightCorner'||'lookDownLeftCorner'||'lookDownRightCorner':
+      case 'lookUp':
         anotherSocketId = getSocketsProperty('name',data.name);
         console.log("Socket: " + anotherSocketId);
         io.to(anotherSocketId).emit("message", message);
@@ -112,6 +113,30 @@ io.on('connection', (socket) => {
         anotherSocketId = '';
         break;
 
+      case 'lookDown':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
+      
+      case 'lookLeft':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
+
+      case 'lookRight':
+        anotherSocketId = getSocketsProperty('name',data.name);
+        console.log("Socket: " + anotherSocketId);
+        io.to(anotherSocketId).emit("message", message);
+        console.log(data.type)
+        anotherSocketId = '';
+        break;
+  
       default:
         break;
     }
