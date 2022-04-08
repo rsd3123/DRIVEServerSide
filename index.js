@@ -137,7 +137,7 @@ io.on('connection', (socket) => {
         anotherSocketId = '';
         break;
 
-      case 'lookTopRight':
+      case 'lookUpRightCorner':
         anotherSocketId = getSocketsProperty('name',data.name);
         console.log("Socket: " + anotherSocketId);
         io.to(anotherSocketId).emit("message", message);
@@ -145,7 +145,7 @@ io.on('connection', (socket) => {
         anotherSocketId = '';
         break;
 
-      case 'lookDownRight':
+      case 'lookDownRightCorner':
         anotherSocketId = getSocketsProperty('name',data.name);
         console.log("Socket: " + anotherSocketId);
         io.to(anotherSocketId).emit("message", message);
@@ -153,7 +153,7 @@ io.on('connection', (socket) => {
         anotherSocketId = '';
         break;
 
-      case 'lookTopLeft':
+      case 'lookUpLeftCorner':
         anotherSocketId = getSocketsProperty('name',data.name);
         console.log("Socket: " + anotherSocketId);
         io.to(anotherSocketId).emit("message", message);
@@ -161,7 +161,7 @@ io.on('connection', (socket) => {
         anotherSocketId = '';
         break;
 
-      case 'lookDownLeft':
+      case 'lookDownLeftCorner':
         anotherSocketId = getSocketsProperty('name',data.name);
         console.log("Socket: " + anotherSocketId);
         io.to(anotherSocketId).emit("message", message);
@@ -192,6 +192,7 @@ io.on('connection', (socket) => {
     //Socket disconnected.
     socket.on("disconnect", (reason) => {
       //console.log(socket.id);
+      socket.disconnect();
       console.log("Socket disconnected: ", socket.id);
     });
   });
