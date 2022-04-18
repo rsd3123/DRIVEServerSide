@@ -184,7 +184,15 @@ io.on('connection', (socket) => {
         console.log(data.type)
         anotherSocketId = '';
         break;
-  
+
+      case 'switchRoles':
+          anotherSocketId = getSocketsProperty('name',data.name);
+          console.log("Socket: " + anotherSocketId);
+          io.to(anotherSocketId).emit("message", message);
+          console.log(data.type)
+          anotherSocketId = '';
+          break;
+          
       default:
         break;
     }
